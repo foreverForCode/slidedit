@@ -19,7 +19,9 @@
 	var Slidedit = function(opts){
 
 		var defaultOpts = {
-			mainCeil:'.lines'
+			mainCeil:'.lines',
+			collectCeil:'.collect',
+			delCeil:'.del'
 		};
 
 		this.opts = core.extend(defaultOpts,opts||{});
@@ -30,67 +32,52 @@
 	Slidedit.prototype = {
 
 		bindData:function(){
-			var that = this;
+			var that = this,opts = that.opts;
 			that.mainDOM = core.$q(that.opts.mainCeil)[0];
 			that.allLi = that.mainDOM.children;
 			that.initX = 0;
 			that.initY = 0;
 			that.moveX = 0;
 			that.moveY = 0;
+			that.range = core.$q(opts.delCeil,that.mainDOM)[0].offsetWidth;
 			that.init();
 		},
 		init:function(){
 			var that = this;
 			[].slice.call(that.allLi,0).forEach(function(node){
+				var who = that;
 				core.addListen(node,touchStart,function(e){
-					var me = that;
+					var me = who;
 					var point = e.targetTouches[0];
 					me.initX = point.pageX;
 					me.initY = point.pageY;
-					console.log(node,me);
-					core.addListen(node,touchMove,function(e){
+					me.currentNode = node;
+					core.addListen(me.currentNode,touchMove,function(e){
 						var my = me;
-						console.log(node);
-						node.classList.add('on');
-						var collectDOM = core.$q('.on .collect',my.mainDOM)[0];
-						var delDOM = core.$q('.on .del',my.mainDOM)[0];
-						var range = collectDOM.offsetWidth;
-						console.log(range);
-						var onCollect = function(val){
-							return val>0 && val<range/4;
-						};
-						var ondel = function(val){
-							return val>-range/4 && val<0;
-						};
-						
+						var delDOM = core.$q('.del',my.currentNode)[0];
 						var point = e.targetTouches[0];
 						my.moveX = point.pageX;
-						my.moveY = point.pageY;
-						var diffY = my.moveY - my.initY;
 						var diffX = my.moveX - my.initX;
 						core.addTransition(delDOM,300);
-						if(Math.abs(diffX)>Math.abs(diffY)){
-							e.preventDefault();
-
-							if(diffX>0){
-								console.log("right");
-							}else{
-								console.log('left');
-								core.setTranslateX(delDOM,diffX);
-								if(diffX>-range/2){
-									core.setTranslateX(delDOM,0);
-								}else{
-									core.setTranslateX(delDOM,-150);
-								}
-							}
+						if(diffX<0){
 							core.setTranslateX(delDOM,diffX);
-						}else{
-							return false;
-						};
-						return false;
+						}						
 					});
-					core.addListen(node,touchEnd,function(e){
-						node.classList.remove("on");
+					
+					core.addListen(me.currentNode,touchEnd,function(e){
+						var my = me;
+						var point = e.changedTouches[0];
+						var endX = point.pageX;
+						var distanceX = endX - my.initX;
+						var delDOM = core.$q('.del',my.currentNode)[0];
+						
+						if(distanceX<0){
+							if(Math.abs(distanceX)>my.range/2){
+								core.setTranslateX(delDOM,-my.range);	
+							}else{
+								core.setTranslateX(delDOM,0);	
+							}
+						}
 					});
 					
 				});

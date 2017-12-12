@@ -32,7 +32,7 @@ ul,li{
 	width:150px;
 	height:200px;
 	position:absolute;
-	left:-150px;
+	transform:translateX(-150px);
 	top:0;
 	line-height:200px;
 	text-align:center;
