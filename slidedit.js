@@ -1,3 +1,4 @@
+
 /**
  *   name:slidedit for mobile
  *   author:jorden
@@ -69,7 +70,10 @@
 						var my = me;
 						var endPoint = e.changedTouches[0];
 						var endX = endPoint.pageX;
+						var endY = endPoint.pageY;
 						var endDiff = endX - my.initX;
+						var endDiffY = endY - my.initY;
+						if(Math.abs(endDiffY) > Math.abs(endDiff)) return;
 						var delDOM = node.querySelectorAll(my.opts.delCeil)[0];
 						if(endDiff<0){
 							if(Math.abs(endDiff)>my.range/2){
