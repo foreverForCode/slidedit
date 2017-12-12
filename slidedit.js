@@ -50,7 +50,7 @@
 					var me = that;
 					var point = e.targetTouches[0];
 					me.initX = point.pageX;
-
+					me.initY = point.pageY;
 					core.addListen(node,touchMove,function(e){
 						var my = me;
 						var movePoint = e.targetTouches[0];
@@ -58,6 +58,8 @@
 						core.addTransition(delDOM,300);
 						my.moveX = movePoint.pageX;
 						var diff = my.moveX - my.initX;
+						var diffY = my.moveY - my.initY;
+						if(Math.abs(diffY)>Math.abs(diff)) return;
 						if(diff<0){
 							core.setTranslateX(delDOM,diff);
 						}
@@ -82,12 +84,7 @@
 					});
 				});
 			});
-		},
-		touchstrat:function(e){
-			
 		}
-		
-		
 	};
 
 	var slidedit = function(options){
