@@ -45,43 +45,46 @@
 		init:function(){
 			var that = this;
 			[].slice.call(that.allLi,0).forEach(function(node){
-				var who = that;
+				
 				core.addListen(node,touchStart,function(e){
-					var me = who;
+					var me = that;
 					var point = e.targetTouches[0];
 					me.initX = point.pageX;
-					me.initY = point.pageY;
-					me.currentNode = node;
-					core.addListen(me.currentNode,touchMove,function(e){
+
+					core.addListen(node,touchMove,function(e){
 						var my = me;
-						var delDOM = core.$q('.del',my.currentNode)[0];
-						var point = e.targetTouches[0];
-						my.moveX = point.pageX;
-						var diffX = my.moveX - my.initX;
+						var movePoint = e.targetTouches[0];
+						var delDOM = node.querySelectorAll(my.opts.delCeil)[0];
 						core.addTransition(delDOM,300);
-						if(diffX<0){
-							core.setTranslateX(delDOM,diffX);
-						}						
-					});
-					
-					core.addListen(me.currentNode,touchEnd,function(e){
-						var my = me;
-						var point = e.changedTouches[0];
-						var endX = point.pageX;
-						var distanceX = endX - my.initX;
-						var delDOM = core.$q('.del',my.currentNode)[0];
-						
-						if(distanceX<0){
-							if(Math.abs(distanceX)>my.range/2){
-								core.setTranslateX(delDOM,-my.range);	
-							}else{
-								core.setTranslateX(delDOM,0);	
-							}
+						my.moveX = movePoint.pageX;
+						var diff = my.moveX - my.initX;
+						if(diff<0){
+							core.setTranslateX(delDOM,diff);
 						}
 					});
-					
+					core.addListen(node,touchEnd,function(e){
+						console.log(node,'is currentline');
+						var my = me;
+						var endPoint = e.changedTouches[0];
+						var endX = endPoint.pageX;
+						var endDiff = endX - my.initX;
+						var delDOM = node.querySelectorAll(my.opts.delCeil)[0];
+						if(endDiff<0){
+							if(Math.abs(endDiff)>my.range/2){
+								core.setTranslateX(delDOM,-my.range);
+							}else{
+								core.setTranslateX(delDOM,0);
+							}	
+						}else{
+							core.setTranslateX(delDOM,0);
+						}
+						
+					});
 				});
 			});
+		},
+		touchstrat:function(e){
+			
 		}
 		
 		
